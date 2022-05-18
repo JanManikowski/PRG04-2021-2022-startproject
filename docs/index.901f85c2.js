@@ -525,6 +525,10 @@ var _bubblePng = require("./images/bubble.png");
 var _bubblePngDefault = parcelHelpers.interopDefault(_bubblePng);
 var _waterJpg = require("./images/water.jpg");
 var _waterJpgDefault = parcelHelpers.interopDefault(_waterJpg);
+var _bonesPng = require("./images/bones.png");
+var _bonesPngDefault = parcelHelpers.interopDefault(_bonesPng);
+var _fish = require("./Fish");
+var _bubble = require("./Bubble");
 class Game {
     fishSprites = [];
     bubbleSprites = [];
@@ -534,25 +538,21 @@ class Game {
             height: 500
         });
         document.body.appendChild(this.pixi.view);
-        this.pixi.loader.add("fishTexture", _fishPngDefault.default).add("backgroundTexture", _waterJpgDefault.default).add("bubbleTexture", _bubblePngDefault.default);
+        this.pixi.loader.add("deadTexture", _bonesPngDefault.default).add("fishTexture", _fishPngDefault.default).add("backgroundTexture", _waterJpgDefault.default).add("bubbleTexture", _bubblePngDefault.default);
         this.pixi.loader.load(()=>this.doneLoading()
         );
     }
     createFish() {
         for(let i = 0; i < 10; i++){
-            this.fish = new _pixiJs.Sprite(this.pixi.loader.resources["fishTexture"].texture);
-            this.fish.x = Math.random() * 700;
-            this.fish.y = Math.random() * 350;
-            // this.fish.tint = Math.random() * 0xffffff
-            this.pixi.stage.addChild(this.fish);
-            this.fishSprites.push(this.fish);
+            this.myfish = new _fish.Fish(this.pixi.loader.resources["fishTexture"].texture, this.pixi.loader.resources["deadTexture"].texture);
+            this.myfish.id = i;
+            this.pixi.stage.addChild(this.myfish);
+            this.fishSprites.push(this.myfish);
         }
     }
     createBubble() {
         for(let i = 0; i < 1; i++){
-            this.bubble = new _pixiJs.Sprite(this.pixi.loader.resources["bubbleTexture"].texture);
-            this.bubble.x = Math.random() * 700;
-            this.bubble.y = Math.random() * 350;
+            this.bubble = new _bubble.Bubble(this.pixi.loader.resources["bubbleTexture"].texture);
             this.pixi.stage.addChild(this.bubble);
             this.bubbleSprites.push(this.bubble);
         }
@@ -562,36 +562,19 @@ class Game {
         let background = new _pixiJs.Sprite(this.pixi.loader.resources["backgroundTexture"].texture);
         background.scale.set(this.pixi.screen.width / background.getBounds().width, 1);
         this.pixi.stage.addChild(background);
-        this.createFish();
         this.createBubble();
-        console.log(this.fishSprites);
+        this.createFish();
         this.pixi.ticker.add((delta)=>this.update(delta)
         );
     }
     update(delta) {
-        for (let sprite of this.fishSprites){
-            sprite.x += -5 * delta;
-            if (sprite.getBounds().right < 0) {
-                sprite.x = this.pixi.stage.getBounds().right;
-                sprite.y = Math.random() * 350;
-            }
-        }
-        for (let sprite1 of this.bubbleSprites){
-            sprite1.y += -1 * delta;
-            if (sprite1.y < -100) {
-                console.log("Bubble Out of Bounds");
-                this.bubble.x = Math.random() * 700;
-                sprite1.y = 600;
-            }
-        }
+        for (let sprite of this.fishSprites)sprite.update(delta);
+        for (let sprite1 of this.bubbleSprites)sprite1.update(delta);
     }
 }
-// if (this.fish.x = 750){
-//             this.fish.x = 0
-//         }
 new Game();
 
-},{"pixi.js":"dsYej","./images/fish.png":"3tLwD","./images/bubble.png":"iMP3P","./images/water.jpg":"jj9Eg","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dsYej":[function(require,module,exports) {
+},{"pixi.js":"dsYej","./images/fish.png":"3tLwD","./images/bubble.png":"iMP3P","./images/water.jpg":"jj9Eg","./Fish":"eMzUh","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./images/bones.png":"dLwEI","./Bubble":"gZ9d3"}],"dsYej":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "utils", ()=>_utils
@@ -37131,6 +37114,75 @@ module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "bubble
 },{"./helpers/bundle-url":"lgJ39"}],"jj9Eg":[function(require,module,exports) {
 module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "water.59ff4e4f.jpg" + "?" + Date.now();
 
-},{"./helpers/bundle-url":"lgJ39"}]},["fpRtI","edeGs"], "edeGs", "parcelRequirea0e5")
+},{"./helpers/bundle-url":"lgJ39"}],"eMzUh":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Fish", ()=>Fish
+);
+var _pixiJs = require("pixi.js");
+class Fish extends _pixiJs.Sprite {
+    constructor(texture, deadTexture){
+        super(texture);
+        this.deadTexture = deadTexture;
+        this.x = Math.random() * 900;
+        this.y = Math.random() * 350;
+        this.speed = -5;
+        this.id = this.id;
+        this.scale.set(Math.floor(Math.random() * 1) + 1);
+        this.interactive = true;
+        this.buttonMode = true;
+        this.on('pointerdown', ()=>this.fishClicked()
+        );
+    }
+    ClickedFish() {
+        let clickedFishId = this.id;
+        this.pixi.removeChild(clickedFishId);
+    }
+    fishClicked() {
+        this.speed = 0;
+        this.texture = this.deadTexture;
+    }
+    update(delta) {
+        this.x += this.speed * delta;
+        if (this.getBounds().right < 0) {
+            this.x = 1000;
+            this.y = Math.random() * 350;
+        }
+    }
+}
+
+},{"pixi.js":"dsYej","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dLwEI":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "bones.df4825d2.png" + "?" + Date.now();
+
+},{"./helpers/bundle-url":"lgJ39"}],"gZ9d3":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Bubble", ()=>Bubble
+);
+var _pixiJs = require("pixi.js");
+class Bubble extends _pixiJs.Sprite {
+    constructor(texture){
+        super(texture);
+        this.speed = -1;
+        this.x = Math.random() * 700;
+        this.y = Math.random() * 350;
+        this.interactive = true;
+        this.buttonMode = true;
+        this.on('pointerdown', ()=>this.bubbleClicked()
+        );
+    }
+    bubbleClicked() {
+        console.log("AAAAAAAAAAAAAA");
+    }
+    update(delta) {
+        this.y += this.speed * delta;
+        if (this.getBounds().top < -60) {
+            this.x = Math.random() * 700;
+            this.y = 550;
+        }
+    }
+}
+
+},{"pixi.js":"dsYej","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["fpRtI","edeGs"], "edeGs", "parcelRequirea0e5")
 
 //# sourceMappingURL=index.901f85c2.js.map
