@@ -27,7 +27,6 @@ var Bubble = /** @class */ (function (_super) {
         return _this;
     }
     Bubble.prototype.bubbleClicked = function () {
-        console.log("AAAAAAAAAAAAAA");
     };
     Bubble.prototype.update = function (delta) {
         this.y += this.speed * delta;

@@ -17,7 +17,7 @@ export class Bubble extends PIXI.Sprite {
     }
 
     bubbleClicked(){
-        console.log("AAAAAAAAAAAAAA")
+
     }
 
     update(delta: number) {
