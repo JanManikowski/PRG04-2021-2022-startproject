@@ -15,8 +15,8 @@ export class Fish extends PIXI.Sprite {
         this.game = game
         this.deadTexture = deadTexture
         this.speed = Math.random() * 6 + 1
-        this.x = Math.random() * game.pixi.screen.right
-        this.y = Math.random() * game.pixi.screen.bottom
+        this.x = Math.random() * game.pixi.screen.right///asdasd
+        this.y = Math.random() * game.pixi.screen.bottom//asdasd
         this.speed = -5
         this.id = this.id
         this.scale.set(1, 1)
